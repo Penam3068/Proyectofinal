@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from messaging.models import Message
 from .models import Profile, Post
-from .forms import UserRegisterForm, UserProfileForm, PostForm
+from .forms import UserRegisterForm, UserProfileForm, PostForm, ProfileForm
 from messaging.forms import MessageForm
 
 # Vista para index (ver posts)
@@ -50,13 +50,14 @@ def register(request):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user.profile)
-        if profile_form.is_valid():
-            profile_form.save()
-            return redirect('profile')
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)  # Incluye request.FILES si estás manejando imágenes
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Redirige después de guardar
     else:
-        profile_form = UserProfileForm(instance=request.user.profile)
-    return render(request, 'blog_app/profile_view.html', {'profile_form': profile_form})
+        form = ProfileForm(instance=request.user.profile)
+
+    return render(request, 'blog_app/profile_view.html', {'form': form})
 
 @login_required
 def post_create(request):
@@ -64,43 +65,43 @@ def post_create(request):
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
+            post.author = request.user  # Asigna el usuario actual como autor
             post.save()
-            return redirect('post_list')  # Redirigir a la lista de posts
+            return redirect('post_list')  # Redirige a la lista de posts
     else:
         form = PostForm()
-    return render(request, 'blog_app/post_form.html', {'form': form})
+
+    return render(request, 'blog_app/create_post.html', {'form': form})
 
 # Editar un post
 @login_required
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    if post.author != request.user:
-        return HttpResponseForbidden("You are not allowed to edit this post.")
-    
+    if request.user != post.author:
+        return redirect('post_list')  # Solo el autor puede editar el post
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             form.save()
-            return redirect('post_list')  # Redirigir a la lista de posts
+            return redirect('post_detail', pk=post.pk)  # Redirige al detalle del post
     else:
         form = PostForm(instance=post)
-    
-    return render(request, 'blog_app/post_form.html', {'form': form})
+
+    return render(request, 'blog_app/edit_post.html', {'form': form})
 
 # Eliminar un post
 @login_required
-def post_delete(request, pk):
+def delete_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    if post.author != request.user:
-        return HttpResponseForbidden("You are not allowed to delete this post.")
-    
+    if request.user != post.author:
+        return redirect('post_list')  # Solo el autor puede eliminar el post
+
     if request.method == 'POST':
         post.delete()
-        return redirect('post_list')  # Redirigir a la lista de posts
-    
-    return render(request, 'blog_app/post_confirm_delete.html', {'post': post})
+        return redirect('post_list')  # Redirige a la lista de posts
 
+    return render(request, 'blog_app/post_confirm_delete.html', {'post': post})
 def post_list(request):
     posts = Post.objects.all()
     return render(request, 'blog_app/post_list.html', {'posts': posts})
