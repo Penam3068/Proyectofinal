@@ -1,0 +1,25 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-warning">
+        <h4 class="alert-heading">¿Estás seguro que quieres eliminar este mensaje?</h4>
+        <p>Este mensaje será eliminado permanentemente y no podrás recuperarlo.</p>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ message.subject }}</h5>
+            <p class="card-text">{{ message.content }}</p>
+            <p class="card-text"><small class="text-muted">Enviado por {{ message.sender.username }} el {{ message.date|date:"d M Y H:i" }}</small></p>
+        </div>
+    </div>
+
+    <!-- Botones para confirmar o cancelar la eliminación -->
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger mt-3">Eliminar</button>
+        <a href="{% url 'inbox' %}" class="btn btn-secondary mt-3">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+<h2>Login</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+<!-- Mostrar mensajes de error -->
+{% if messages %}
+  <ul class="alert alert-danger">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

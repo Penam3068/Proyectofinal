@@ -1,0 +1,42 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Mensajes Recibidos</h2>
+
+        <!-- Botón para enviar mensajes -->
+        <a href="{% url 'send_message' %}" class="btn btn-primary mb-3">Enviar Mensaje</a>
+
+        <!-- Si hay mensajes, mostrarlos -->
+        {% if messages_received %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>De</th>
+                            <th>Asunto</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for message in messages_received %}
+                            <tr>
+                                <td>{{ message.sender.username }}</td>
+                                <td>{{ message.subject }}</td>
+                                <td>{{ message.date|date:"d M Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'view_message' message.pk %}" class="btn btn-sm btn-info">Leer</a>
+                                    <a href="{% url 'delete_message' message.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- Mensaje cuando no hay mensajes recibidos -->
+            <p>No hay mensajes.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+{% if user.profile.profile_image %}
+    <img src="{{ user.profile.profile_image.url }}" class="img-thumbnail" alt="Profile Image">
+{% else %}
+    <img src="{% static 'default.png' %}" class="img-thumbnail" alt="Default Image">
+{% endif %}
+<div class="container">
+    <h2>Editar Perfil</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Información del Usuario</h5>
+                {{ user_form.as_p }}
+            </div>
+            <div class="col-md-6">
+                <h5>Actualizar Imagen de Perfil</h5>
+                <img src="{{ user.profile.profile_image.url }}" class="img-thumbnail" alt="Profile Image">
+                {{ profile_form.as_p }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+</div>
+{% endblock %}
