@@ -1,11 +1,9 @@
-{% extends 'blog_app/base.html' %}
-
+{% extends 'base.html' %}
 {% block content %}
-<h2>Enviar un mensaje</h2>
-
+<h2>Enviar Mensaje</h2>
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+    <button type="submit" class="btn btn-primary">Enviar</button>
 </form>
 {% endblock %}

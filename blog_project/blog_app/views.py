@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from messaging.models import Message
 from .models import Profile, Post
-from .forms import UserRegisterForm, UserProfileForm, PostForm, ProfileForm
+from .forms import UserRegisterForm, UserProfileForm, PostForm, ProfileForm, UserForm
 from messaging.forms import MessageForm
 
 # Vista para index (ver posts)
@@ -50,14 +50,20 @@ def register(request):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)  # Incluye request.FILES si estás manejando imágenes
-        if form.is_valid():
-            form.save()
-            return redirect('profile')  # Redirige después de guardar
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile')
     else:
-        form = ProfileForm(instance=request.user.profile)
-
-    return render(request, 'blog_app/profile_view.html', {'form': form})
+        user_form = UserForm(instance=request.user)
+        profile_form = ProfileForm(instance=request.user.profile)
+    
+    return render(request, 'blog_app/profile_view.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
 
 @login_required
 def post_create(request):

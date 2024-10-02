@@ -1,19 +1,7 @@
 {% extends 'blog_app/base.html' %}
-
 {% block content %}
-    <div class="container mt-5">
-        <h2>Mensaje de {{ message.sender.username }}</h2>
-        <p><strong>Asunto:</strong> {{ message.subject }}</p>
-        <p><strong>Fecha:</strong> {{ message.date|date:"d M Y H:i" }}</p>
-
-        <div class="card mt-4">
-            <div class="card-body">
-                <p>{{ message.content }}</p>  <!-- Mostrar el contenido del mensaje -->
-            </div>
-        </div>
-
-        <!-- Botón para responder o volver a la bandeja de entrada -->
-        <a href="{% url 'send_message' %}" class="btn btn-primary mt-3">Responder</a>
-        <a href="{% url 'inbox' %}" class="btn btn-secondary mt-3">Volver a la bandeja de entrada</a>
-    </div>
+<h2>{{ message.subject }}</h2>
+<p><strong>De:</strong> {{ message.sender }} </p>
+<p><strong>Fecha:</strong> {{ message.timestamp }}</p>
+<p>{{ message.content }}</p>
 {% endblock %}

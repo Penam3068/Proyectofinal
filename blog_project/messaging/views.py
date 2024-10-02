@@ -12,8 +12,9 @@ def outbox(request):
 # Vista para mensajería
 @login_required
 def inbox(request):
-    messages_received = Message.objects.filter(receiver=request.user)  # Mensajes recibidos por el usuario
-    return render(request, 'messaging_app/inbox.html', {'messages_received': messages_received})
+    received_messages = Message.objects.filter(receiver=request.user)
+    return render(request, 'messaging_app/inbox.html', {'received_messages': received_messages})
+
 @login_required
 def send_message(request):
     if request.method == 'POST':
@@ -29,10 +30,10 @@ def send_message(request):
 
 @login_required
 def view_message(request, pk):
-    # Obtén el mensaje si pertenece al usuario
-    message = get_object_or_404(Message, pk=pk, receiver=request.user)
+    message = get_object_or_404(Message, pk=pk)
+    if request.user != message.receiver:
+        return redirect('inbox')
     return render(request, 'messaging_app/view_message.html', {'message': message})
-    
 @login_required
 def delete_message(request, pk):
     message = get_object_or_404(Message, pk=pk, receiver=request.user)
